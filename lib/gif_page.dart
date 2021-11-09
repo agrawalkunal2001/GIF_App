@@ -12,15 +12,19 @@ class GIFPage extends StatefulWidget {
 }
 
 class _GIFPageState extends State<GIFPage> {
+  bool loading = false;
   final TextEditingController controller = new TextEditingController();
   var data;
   final String url =
-      "https://api.giphy.com/v1/gifs/search?api_key=iB04ymlkqsaN2SyIQYFcWaosmKlgbaG6&limit=25&offset=0&rating=g&lang=en&q=";
+      "https://api.giphy.com/v1/gifs/search?api_key=iB04ymlkqsaN2SyIQYFcWaosmKlgbaG6&limit=10&offset=0&rating=g&lang=en&q=";
 
   getData(String search) async {
+    loading = true;
     var res = await http.get(Uri.parse(url + search));
     data = jsonDecode(res.body)["data"];
-    setState(() {});
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
@@ -32,49 +36,64 @@ class _GIFPageState extends State<GIFPage> {
         backgroundColor: Vx.gray900,
         centerTitle: true,
       ),
-      body: Theme(
-        data: ThemeData.dark(),
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: TextField(
-                      controller: controller,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: "Search GIFs".text.make(),
+      body: SingleChildScrollView(
+        child: Theme(
+          data: ThemeData.dark(),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        controller: controller,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          label: "Search GIFs".text.make(),
+                        ),
                       ),
                     ),
-                  ),
-                  30.widthBox,
-                  SizedBox(
-                    height: 62,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        getData(controller.text);
-                      },
-                      child: Icon(Icons.search),
+                    30.widthBox,
+                    SizedBox(
+                      height: 62,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          getData(controller.text);
+                        },
+                        child: Icon(Icons.search),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            VxConditional(
-              condition: data != null,
-              builder: (context) => "Data"
-                  .text
-                  .white
-                  .make(), // If condition is true, builder is executed
-              fallback: (context) => "Nothing"
-                  .text
-                  .blue300
-                  .xl4
-                  .make(), // If condition is false, fallback will be executed
-            ),
-          ],
+              if (loading)
+                CircularProgressIndicator().centered()
+              else
+                VxConditional(
+                  condition: data != null,
+                  builder: (context) => GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: context.isMobile ? 2 : 3,
+                    ),
+                    itemBuilder: (context, index) {
+                      final url = data[index]["images"]["fixed_height"]["url"]
+                          .toString();
+                      return Image.network(url, fit: BoxFit.cover)
+                          .card
+                          .roundedSM
+                          .make();
+                    },
+                    itemCount: data.length,
+                  ), // If condition is true, builder is executed
+                  fallback: (context) => "Nothing Found!"
+                      .text
+                      .blue300
+                      .xl4
+                      .make(), // If condition is false, fallback will be executed
+                ).h(context.percentHeight * 70),
+            ],
+          ),
         ),
       ),
     );
