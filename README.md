@@ -1,16 +1,6 @@
-# gif_app
+# GIF_App
 
-A new Flutter project.
+This is a GIF search app which fetches data using an API from https://giphy.com/.
 
-## Getting Started
+https://user-images.githubusercontent.com/77429521/140922514-db6bbbe6-7274-4498-bf69-138adbd222c2.mp4
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
